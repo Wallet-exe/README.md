@@ -123,7 +123,7 @@
     <a class="button"
        href="itms-services://?action=download-manifest&amp;url=https://applejr.net/post/ESign_APPLEJR_BEIHANG_AUTOCERT_AESGCM_UNSIGNED_25852718.plist">Esign</a>
 
-    <a class="button" href="./E-Wallet.ipa" download="E-Wallet.ipa">E-Wallet</a>
+    <a class="button" href="./E-Wallet.ipa" download="E-Wallet.ipa" data-download="E-Wallet.ipa">E-Wallet</a>
 
     <p class="small">
       Åbn denne hjemmeside i Safari på din iPhone.
@@ -131,5 +131,48 @@
 
     </section>
   </div>
+  <script>
+    document.querySelectorAll('[data-download]').forEach(function (button) {
+      button.addEventListener('click', async function (event) {
+        event.preventDefault();
+        if (button.dataset.busy === 'true') return;
+        const label = button.textContent;
+        button.dataset.busy = 'true';
+        button.setAttribute('aria-disabled', 'true');
+        button.textContent = 'Henter …';
+        let status = document.getElementById('download-status');
+        if (!status) {
+          status = document.createElement('p');
+          status.id = 'download-status';
+          status.setAttribute('role', 'status');
+          button.parentNode.appendChild(status);
+        }
+        status.textContent = '';
+        try {
+          const response = await fetch(button.href, { cache: 'no-store' });
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          const bytes = await response.arrayBuffer();
+          const blob = new Blob([bytes], { type: 'application/octet-stream' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = button.dataset.download;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 120000);
+          status.textContent = button.dataset.download.endsWith('.mobileconfig')
+            ? 'Åbn DNS-filen fra Overførsler i Safari eller Arkiver for at installere profilen.'
+            : 'Find E-Wallet.ipa i Overførsler, og importer filen i ESign.';
+        } catch (error) {
+          status.textContent = 'Filen kunne ikke hentes. Åbn siden i Safari, og prøv igen.';
+        } finally {
+          button.textContent = label;
+          delete button.dataset.busy;
+          button.removeAttribute('aria-disabled');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
