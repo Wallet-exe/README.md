@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="da"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>E-Wallet – Installation</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f5f7;color:#1d1d1f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:24px 16px}.card{max-width:480px;margin:auto;background:white;border-radius:25px;padding:30px 24px;box-shadow:0 12px 40px #00000012}header{text-align:center}.icon{font-size:48px}h1{font-size:30px;margin:12px 0}h2{font-size:24px}p,li{line-height:1.65}li{margin-bottom:12px}ol{padding-left:23px}.notice{color:#b42318;font-weight:700;font-size:14px}.muted{color:#666;font-size:14px}.progress{height:6px;background:#eee;border-radius:9px;overflow:hidden;margin:12px 0 28px}.progress span{display:block;height:100%;background:#007aff;transition:width .25s}.button,button{font:inherit;cursor:pointer;border:0;border-radius:14px;padding:17px;text-align:center;font-weight:650}.button{display:block;background:#007aff;color:white;text-decoration:none;margin:22px 0}button{background:#eee;color:#222}.navigation{display:flex;gap:10px;margin-top:28px}.navigation button:last-child{background:#007aff;color:white;flex:1}button:disabled{opacity:.4;cursor:default}.note{padding:15px;background:#f5f5f7;border-radius:12px;font-size:14px}.reset{background:none;color:#666;text-decoration:underline;font-size:13px;padding:15px 0} [hidden]{display:none!important}a:focus-visible,button:focus-visible{outline:3px solid #222;outline-offset:3px}#download-status{font-size:14px}h2:focus{outline:none}
+</style></head><body><main class="card">
+<header><div class="icon" aria-hidden="true">💳</div><h1>E-Wallet – HBC Bank</h1><p class="muted">Alternativ installation. Udvikleren hedder HSBC Bank plc i Indstillinger.</p><p class="notice">OBS, LINKET SKAL ÅBNES I SAFARI!</p><p class="muted">Følg ét trin ad gangen. Tryk først på næste, når du er færdig.</p></header>
+<p id="step-label" class="muted" aria-live="polite"></p><div class="progress" aria-hidden="true"><span id="progress"></span></div>
+<section data-step><h2 tabindex="-1">1. Installer DNS</h2>
+<p>Tryk på DNS-knappen og derefter <strong>Tillad</strong>, når iPhone spørger.</p>
+<a class="button" href="./AppleJr_AntiRevoke_Single.mobileconfig">DNS</a>
+<ol><li>Åbn <strong>Indstillinger → Profil hentet</strong>. Hvis det ikke vises, vælg <strong>Generelt → VPN og Administration af enhed → AppleJr Anti-Revoke DNS</strong>.</li><li>Tryk <strong>Installer</strong>, indtast din iPhone-kode, og bekræft installationen.</li><li>Vend tilbage til denne side i Safari.</li></ol>
+<p class="note">DNS er først installeret, når du har godkendt det i Indstillinger.</p></section>
+<section data-step hidden><h2 tabindex="-1">2. Installer E-Wallet</h2>
+<p>Tryk på <strong>E-Wallet</strong> nedenfor, og bekræft med <strong>Installer</strong>, når iPhone spørger.</p>
+<a class="button" href="itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fwallet-exe.github.io%2FREADME.md%2Fmanifest-hbc.plist">E-Wallet</a>
+<ol><li>Vent, til E-Wallet er færdig med at installere på hjemmeskærmen.</li><li>Vend tilbage til denne guide, og fortsæt til næste trin.</li></ol>
+<p class="note">Hvis iPhone siger, at appen ikke kan installeres eller verificeres, skal appens signering kontrolleres. Download af DNS-profilen er ikke en bekræftelse på, at appen kan installeres.</p></section>
+<section data-step hidden><h2 tabindex="-1">3. Godkend og åbn appen</h2>
+<ol><li>Åbn <strong>Indstillinger → Generelt → VPN og Administration af enhed</strong>.</li><li>Vælg <strong>HSBC Bank plc</strong>, og tryk <strong>Godkend “HSBC Bank plc”</strong>.</li><li>Tryk <strong>Tillad og genstart</strong>, hvis iPhone viser denne mulighed.</li><li>Efter genstart skal du låse telefonen op og følge anvisningerne på skærmen for at færdiggøre godkendelsen.</li><li>Åbn <strong>E-Wallet</strong>, tillad Face ID, når du bliver spurgt, og log ind med din tildelte kode.</li></ol>
+
+<a href="./index.html">Tilbage til den normale installation</a>
+<p><strong>Færdig! God fornøjelse :)</strong></p></section>
+<p id="download-status" role="status"></p>
+<nav class="navigation" aria-label="Installationstrin"><button id="back" type="button">Tilbage</button><button id="next" type="button">Jeg er færdig — næste</button></nav>
+<p id="finished" class="note" hidden>Du har markeret guiden som gennemført.</p>
+<button class="reset" type="button" id="reset">Start guiden forfra</button>
+<p id="save-warning" class="muted" hidden>Browseren kan ikke gemme din fremgang. Hold denne fane åben.</p>
+</main>
+<script>
+(function(){
+const key='ewallet-hbc-install-guide-v1',steps=Array.from(document.querySelectorAll('[data-step]'));
+let current=1,done=false;
+try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(saved && Number.isInteger(saved.step) && saved.step>=0 && saved.step<steps.length){current=saved.step;done=saved.done===true && current===2;}}catch(e){}
+function save(){try{localStorage.setItem(key,JSON.stringify({step:current,done}));}catch(e){document.getElementById('save-warning').hidden=false;}}
+function show(focus){steps.forEach((s,i)=>s.hidden=i!==current);document.getElementById('step-label').textContent='Trin '+(current+1)+' af 3';document.getElementById('progress').style.width=((current+1)/3*100)+'%';document.getElementById('back').disabled=current===0;document.getElementById('next').textContent=current===2?(done?'Gennemført':'Jeg er færdig'):'Jeg er færdig — næste';document.getElementById('next').disabled=done;document.getElementById('finished').hidden=!done;document.getElementById('download-status').textContent='';if(focus){steps[current].querySelector('h2').focus({preventScroll:true});window.scrollTo({top:0,behavior:'smooth'});}}
+document.getElementById('next').addEventListener('click',()=>{if(current<2)current++;else done=true;save();show(true);});
+document.getElementById('back').addEventListener('click',()=>{current=Math.max(0,current-1);done=false;save();show(true);});
+document.getElementById('reset').addEventListener('click',()=>{current=0;done=false;save();show(true);});show(false);
+})();
+</script>
+
+</body></html>
